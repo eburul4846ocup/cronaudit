@@ -67,3 +67,16 @@ def test_validation_result_bool_true():
 def test_validation_result_bool_false():
     r = ValidationResult(valid=False, errors=["some error"])
     assert bool(r) is False
+
+
+@pytest.mark.parametrize("expression", [
+    "60 * * * *",   # minute out of range
+    "* 24 * * *",   # hour out of range
+    "* * 32 * *",   # day-of-month out of range
+    "* * * 13 *",   # month out of range
+    "* * * * 7",    # day-of-week out of range (0-6)
+])
+def test_invalid_field_out_of_range(expression):
+    """Each field should reject values that exceed its allowed maximum."""
+    result = validate_expression(expression)
+    assert result.valid is False, f"Expected '{expression}' to be invalid"
