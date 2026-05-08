@@ -33,6 +33,18 @@ def format_entry(entry: CronEntry, show_server: bool = True) -> str:
     return " | ".join(parts)
 
 
+def summarize_entries(entries: List[CronEntry]) -> str:
+    """Return a short summary string for a list of CronEntry objects."""
+    total = len(entries)
+    valid = sum(1 for e in entries if e.is_valid)
+    invalid = total - valid
+    servers = len(set(e.server or "(local)" for e in entries))
+    return (
+        f"{total} entries ({valid} valid, {invalid} invalid) "
+        f"across {servers} server(s)"
+    )
+
+
 def generate_report(
     entries: List[CronEntry],
     title: str = "Crontab Audit Report",
